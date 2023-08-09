@@ -1,6 +1,8 @@
-import { Contract, Wallet, ethers } from "ethers";
 import { Registery_ABI, Registery_address } from "@/constants/constants";
 const RPC_LINK = process.env.NEXT_PUBLIC_RPC_URL;
+
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
 
 // Response from the API
 // type contractDataType = {
@@ -19,17 +21,20 @@ async function searchContract(req, res) {
 
   const address = req.body.contractAddress;
 
-  const provider = new ethers.providers.JsonRpcProvider(RPC_LINK);
-
-  const registery_contract = new Contract(
-    Registery_address,
-    Registery_ABI,
-    provider
-  );
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(RPC_LINK),
+  });
 
   try {
-    const response = await registery_contract.getContractRecord(address);
-    // console.log(response);
+    const data = await publicClient.readContract({
+      address: Registery_address,
+      abi: Registery_ABI,
+      functionName: "getContractRecord",
+      args: [address],
+    });
+
+    console.log(data);
     if (!response) {
       console.log("Contract does not exist");
       res
@@ -38,7 +43,6 @@ async function searchContract(req, res) {
     }
     const ipfsURL = response;
     const contractData = await (await fetch(ipfsURL)).json();
-    // console.log(contractData);
 
     if (!contractData) {
       res.status(400).json({ output: "Contract data not found " });
