@@ -3,6 +3,10 @@ const RPC_LINK = process.env.NEXT_PUBLIC_RPC_URL;
 
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
+import {
+  addNewContractRecord,
+  getContractRecord,
+} from "../../firebase/methods";
 
 // Response from the API
 // type contractDataType = {
@@ -16,32 +20,34 @@ import { mainnet } from "viem/chains";
 
 async function searchContract(req, res) {
   if (!req.body.contractAddress) {
-    return res.status(400).json({ message: "Contract Data required" });
+    return res.status(400).json({ message: "Contract Address required" });
   }
 
   const address = req.body.contractAddress;
 
-  const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http(RPC_LINK),
-  });
+  // const publicClient = createPublicClient({
+  //   chain: mainnet,
+  //   transport: http(RPC_LINK),
+  // });
 
   try {
-    const data = await publicClient.readContract({
-      address: Registery_address,
-      abi: Registery_ABI,
-      functionName: "getContractRecord",
-      args: [address],
-    });
+    // const data = await publicClient.readContract({
+    //   address: Registery_address,
+    //   abi: Registery_ABI,
+    //   functionName: "getContractRecord",
+    //   args: [address],
+    // });
+
+    const data = await getContractRecord(`${address}`);
 
     console.log(data);
-    if (!response) {
+    if (!data) {
       console.log("Contract does not exist");
       res
         .status(400)
         .json({ output: "Contract is not verified , verify First" });
     }
-    const ipfsURL = response;
+    const ipfsURL = data.ipfsURI;
     const contractData = await (await fetch(ipfsURL)).json();
 
     if (!contractData) {

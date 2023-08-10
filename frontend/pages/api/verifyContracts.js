@@ -7,14 +7,19 @@
 //   abi: any[];
 //   bytecode: string;
 //   code: any;
+//   network: string;
+//   chainId: number;
 // };
 
 import { Registery_ABI, Registery_address } from "@/constants/constants";
 import { storeContract } from "@/functionality/storeData";
-// import { Contract, Wallet, ethers } from "ethers";
 import { http, createWalletClient, publicActions } from "viem";
 import { mainnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import {
+  addNewContractRecord,
+  getContractRecord,
+} from "../../firebase/methods";
 
 const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 const RPC_LINK = process.env.NEXT_PUBLIC_RPC_URL;
@@ -37,33 +42,34 @@ async function verifyContract(req, res) {
     // setIpfsLink(IPFSURL);
 
     /// Store the IPFS link somewhere
-    const account = privateKeyToAccount("0x...");
+    // const account = privateKeyToAccount("0x...");
 
-    const walletClient = createWalletClient({
-      account,
-      chain: mainnet,
-      transport: http(RPC_LINK),
-    }).extend(publicActions);
+    // const walletClient = createWalletClient({
+    //   account,
+    //   chain: mainnet,
+    //   transport: http(RPC_LINK),
+    // }).extend(publicActions);
 
-    const registery_contract = new Contract(
-      Registery_address,
-      Registery_ABI,
-      manager_wallet
+    // const { request } = await walletClient.simulateContract({
+    //   address: Registery_address,
+    //   abi: Registery_ABI,
+    //   functionName: "addContractRecord",
+    //   arguments: [contractData.address, IPFSURL],
+    // });
+
+    // const tx = await walletClient.writeContract(request);
+
+    await addNewContractRecord(
+      `${contractData.address}`,
+      IPFSURL,
+      contractData.network,
+      contractData.chainId
     );
-
-    const { request } = await walletClient.simulateContract({
-      address: Registery_address,
-      abi: Registery_ABI,
-      functionName: "addContractRecord",
-      arguments: [contractData.address, IPFSURL],
-    });
-
-    const tx = await walletClient.writeContract(request);
 
     console.log("Record Added in the registery");
 
     /// Record of the tx with the txHash
-    res.status(200).json({ output: tx });
+    res.status(200).json({ output: contractData.address });
   } catch (error) {
     res.status(400).json({ output: error });
     console.log(error);
