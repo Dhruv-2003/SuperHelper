@@ -14,6 +14,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 import localFont from "@next/font/local";
+import Navbar from "../components/navbar"
 
 const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
@@ -75,6 +76,7 @@ function MyApp({ Component, pageProps }) {
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
           <main className={myFont.className}>
+            <Navbar/>
             <Component {...pageProps} />
           </main>
         </RainbowKitProvider>
