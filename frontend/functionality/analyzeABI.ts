@@ -1,53 +1,53 @@
-// export type argType = {
-//   internalType: string;
-//   name: string;
-//   type: string;
-// };
+export type argType = {
+  internalType: string;
+  name: string;
+  type: string;
+};
 
-// export type contractDataType = {
-//   name: string;
-//   address: string;
-//   deployer: string;
-//   abi: any[];
-//   bytecode: string;
-//   code: any;
-// };
+export type contractDataType = {
+  name: string;
+  address: string;
+  deployer: string;
+  abi: any[];
+  bytecode: string;
+  code: any;
+};
 
-// export type functionType =
-//   | {
-//       anonymous?: undefined;
-//       inputs: argType[];
-//       name?: string;
-//       outputs?: argType[];
-//       stateMutability?: string;
-//       type: string;
-//     }
-//   | {
-//       inputs: { internalType: string; name: string; type: string }[];
-//       stateMutability: string;
-//       type: string;
-//       anonymous?: undefined;
-//       name?: undefined;
-//       outputs?: undefined;
-//     }
-//   | {
-//       anonymous: boolean;
-//       inputs: {}[];
-//       name: string;
-//       type: string;
-//       stateMutability?: undefined;
-//       outputs?: undefined;
-//     };
+export type functionType =
+  | {
+      anonymous?: undefined;
+      inputs: argType[];
+      name?: string;
+      outputs?: argType[];
+      stateMutability?: string;
+      type: string;
+    }
+  | {
+      inputs: { internalType: string; name: string; type: string }[];
+      stateMutability: string;
+      type: string;
+      anonymous?: undefined;
+      name?: undefined;
+      outputs?: undefined;
+    }
+  | {
+      anonymous: boolean;
+      inputs: {}[];
+      name: string;
+      type: string;
+      stateMutability?: undefined;
+      outputs?: undefined;
+    };
 
-// export type abiType = functionType[];
+export type abiType = functionType[];
 
-// export type dataType = {
-//   read: functionType[];
-//   write: functionType[];
-//   constructor: functionType[];
-//   event: functionType[];
-//   error: functionType[];
-// };
+export type dataType = {
+  read: functionType[];
+  write: functionType[];
+  constructor: functionType[];
+  event: functionType[];
+  error: functionType[];
+};
 
 export const analyzeABI = async (abi) => {
   const functionJSONObject = {
@@ -79,7 +79,7 @@ export const analyzeABI = async (abi) => {
         functions.type === "function" && functions.stateMutability === "view"
     );
 
-    return data;
+    return Data;
   }
 
   async function filterWriteFunctions() {

@@ -1,6 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSwitchNetwork } from "wagmi";
 import { addNewContractRecord, getContractRecord } from "../firebase/methods";
+import Hero from "../components/hero";
 
 export default function Home() {
   const { chains, error, isLoading, pendingChainId, switchNetwork } =
@@ -125,6 +126,7 @@ export default function Home() {
       >
         Get Record
       </button> */}
+      <Hero />
     </div>
   );
 }

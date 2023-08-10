@@ -12,6 +12,11 @@ import {
 } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { ChakraProvider } from "@chakra-ui/react";
+import localFont from "@next/font/local";
+import Navbar from "../components/navbar"
+
+const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
 const modeSepolia = {
   id: 919,
@@ -67,11 +72,16 @@ const wagmiConfig = createConfig({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <ChakraProvider>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
+          <main className={myFont.className}>
+            <Navbar/>
+            <Component {...pageProps} />
+          </main>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ChakraProvider>
   );
 }
 
