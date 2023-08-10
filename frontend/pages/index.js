@@ -1,9 +1,11 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Hero from "../components/hero";
+import Navbar from "../components/navbar";
 
 export default function Home() {
   return (
     <div>
-      <ConnectButton />
+      <Navbar />
+      <Hero />
     </div>
   );
 }
