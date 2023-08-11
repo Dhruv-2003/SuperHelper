@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Code } from "@chakra-ui/react";
-import ConstructorArguments from "./ConstructorArgs";
+import ConstructorArguments from "../components/constructorArgs";
 import { deploy, deployViaEthers } from "../functionality/deployContract";
 import {
   useAccount,

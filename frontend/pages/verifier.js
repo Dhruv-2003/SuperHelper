@@ -1,9 +1,8 @@
-import React from "react";
-import ConstructorArguments from "./ConstructorArgs";
+import React, { useState, useEffect } from "react";
+import ConstructorArguments from "../components/constructorArgs";
 import { deploy } from "../functionality/deployContract";
 import { useAccount, usePublicClient, useNetwork } from "wagmi";
 import { storeContract } from "../functionality/storeData";
-import { Contract, Wallet } from "ethers";
 import { Registery_ABI, Registery_address } from "../constants/constants";
 import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
