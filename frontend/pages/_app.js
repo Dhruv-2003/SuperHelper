@@ -10,11 +10,11 @@ import {
   zora,
   zoraTestnet,
 } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+// import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 import localFont from "@next/font/local";
-import Navbar from "../components/navbar"
+import Navbar from "../components/navbar";
 
 const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
@@ -45,17 +45,8 @@ const modeSepolia = {
 };
 
 const { chains, publicClient } = configureChains(
-  [
-    mainnet,
-    optimism,
-    optimismGoerli,
-    zora,
-    zoraTestnet,
-    base,
-    baseGoerli,
-    modeSepolia,
-  ],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  [optimism, optimismGoerli, zora, zoraTestnet, base, baseGoerli, modeSepolia],
+  [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
@@ -76,7 +67,7 @@ function MyApp({ Component, pageProps }) {
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
           <main className={myFont.className}>
-            <Navbar/>
+            <Navbar />
             <Component {...pageProps} />
           </main>
         </RainbowKitProvider>

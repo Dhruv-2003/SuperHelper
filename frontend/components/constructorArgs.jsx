@@ -1,9 +1,9 @@
-import { argType, functionType } from "../functionality/analyzeABI";
+// import { argType, functionType } from "../functionality/analyzeABI";
 import React, { useEffect, useState } from "react";
 
-const ConstructorArguments = (props: any) => {
-  const [cInputs, setCInputs] = useState<argType[]>();
-  const [constructorData, setConstructorData] = useState<functionType>();
+const ConstructorArguments = (props) => {
+  const [cInputs, setCInputs] = useState();
+  const [constructorData, setConstructorData] = useState();
   /// handle the value send thing
 
   async function handle() {
@@ -17,8 +17,8 @@ const ConstructorArguments = (props: any) => {
     handle();
   }, []);
 
-  async function handleInput(inputvalue: any, key: number) {
-    let currInput: any[] = props.inputs;
+  async function handleInput(inputvalue, key) {
+    let currInput = props.inputs;
     currInput[key] = inputvalue;
     props.setInputs(currInput);
   }

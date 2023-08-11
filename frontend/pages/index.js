@@ -4,16 +4,16 @@ import { addNewContractRecord, getContractRecord } from "../firebase/methods";
 import Hero from "../components/hero";
 
 export default function Home() {
-  const { chains, error, isLoading, pendingChainId, switchNetwork } =
-    useSwitchNetwork();
+  // const { chains, error, isLoading, pendingChainId, switchNetwork } =
+  //   useSwitchNetwork();
 
-  const changeNetwork = (chainId) => {
-    switchNetwork(chainId);
-  };
+  // const changeNetwork = (chainId) => {
+  //   switchNetwork(chainId);
+  // };
 
   return (
     <div>
-      <ConnectButton />
+      {/* <ConnectButton />
       <div>
         <ConnectButton.Custom>
           {({
@@ -106,7 +106,7 @@ export default function Home() {
             );
           }}
         </ConnectButton.Custom>
-      </div>
+      </div> */}
       {/* <button
         onClick={() =>
           addNewContractRecord(

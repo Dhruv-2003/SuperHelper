@@ -1,5 +1,5 @@
 import { explorerLink } from "../constants/constants";
-import { argType, functionType } from "../functionality/analyzeABI";
+// import { argType, functionType } from "../functionality/analyzeABI";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,15 +13,15 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 
-const ReturnedFunction = (props: any) => {
-  const [inputs, setInputs] = useState<argType[]>();
-  const [argInputs, setArgInputs] = useState<any[]>([]);
-  const [value, setValue] = useState<string>("0");
-  const [argOutputs, setArgOutputs] = useState<any[]>([]);
-  const [outputs, setOutputs] = useState<argType[]>();
-  const [ifPayable, setIfPayable] = useState<boolean>(false);
-  const [txData, setTxData] = useState<{}>();
-  const [txLink, setTxLink] = useState<string>();
+const ReturnedFunction = (propss) => {
+  const [inputs, setInputs] = useState();
+  const [argInputs, setArgInputs] = useState([]);
+  const [value, setValue] = useState("0");
+  const [argOutputs, setArgOutputs] = useState([]);
+  const [outputs, setOutputs] = useState();
+  const [ifPayable, setIfPayable] = useState(false);
+  const [txData, setTxData] = useState();
+  const [txLink, setTxLink] = useState();
   const data = props.functionData;
   const contractAddress = props.contractAddress;
 
@@ -53,7 +53,7 @@ const ReturnedFunction = (props: any) => {
       value: value ? ethers.parseEther(value) : 0,
     };
 
-    let txRes: any;
+    let txRes;
 
     try {
       if (data.stateMutability == "view") {
@@ -61,7 +61,7 @@ const ReturnedFunction = (props: any) => {
         txRes = await provider.call(tx);
         console.log(txRes);
 
-        const decoded: any = abiInterface.decodeFunctionResult(
+        const decoded = abiInterface.decodeFunctionResult(
           `${data.name}`,
           txRes
         );
@@ -114,16 +114,13 @@ const ReturnedFunction = (props: any) => {
 
       /// alert user with the error display on the page
 
-      const decoded: any = abiInterface.decodeErrorResult(
-        `${data.name}`,
-        txRes
-      );
+      const decoded = abiInterface.decodeErrorResult(`${data.name}`, txRes);
       console.log(txRes);
     }
   }
 
-  async function handleInput(inputvalue: any, key: number) {
-    let currInput: any[] = argInputs;
+  async function handleInput(inputvalue, key) {
+    let currInput = argInputs;
     currInput[key] = inputvalue;
     setArgInputs(currInput);
   }
@@ -138,7 +135,7 @@ const ReturnedFunction = (props: any) => {
     });
   }
 
-  function handleOutput(output: argType, argValue: any) {
+  function handleOutput(output, argValue) {
     if (argValue == undefined) return "Nan";
     if (output.type == "uint256") {
       return parseInt(argValue);
@@ -212,9 +209,7 @@ const ReturnedFunction = (props: any) => {
                 <h1 className="text-lg">
                   {output.name ? output.name : "Output :"}
                 </h1>
-                <h2
-                className="text-green-400"
-                >
+                <h2 className="text-green-400">
                   {/* {output.type == "uint256"
                     ? parseInt(argOutputs[key])
                     : argOutputs[key]} */}
