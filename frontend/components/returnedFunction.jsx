@@ -3,17 +3,13 @@ import { explorerLink } from "../constants/constants";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import {
-  useAccount,
-  useContractReads,
-  useContractRead,
-  usePrepareSendTransaction,
-  usePublicClient,
-  useSendTransaction,
-  useWalletClient,
-  useWaitForTransaction,
-} from "wagmi";
+  decodeErrorResult,
+  decodeFunctionResult,
+  encodeFunctionData,
+} from "viem";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
-const ReturnedFunction = (propss) => {
+const ReturnedFunction = (props) => {
   const [inputs, setInputs] = useState();
   const [argInputs, setArgInputs] = useState([]);
   const [value, setValue] = useState("0");
@@ -39,12 +35,18 @@ const ReturnedFunction = (propss) => {
     }
   }
   async function handleSubmit() {
-    const abiInterface = new ethers.Interface([data]);
+    // const abiInterface = new ethers.Interface([data]);
 
-    const encodedData = abiInterface.encodeFunctionData(
-      `${data.name}`,
-      argInputs
-    );
+    // const encodedData = abiInterface.encodeFunctionData(
+    //   `${data.name}`,
+    //   argInputs
+    // );
+
+    const encodedData = encodeFunctionData({
+      abi: [data],
+      functionName: data.name,
+      args: argInputs,
+    });
 
     /// Also sending the value if the function is payable
     const tx = {
@@ -61,10 +63,16 @@ const ReturnedFunction = (propss) => {
         txRes = await provider.call(tx);
         console.log(txRes);
 
-        const decoded = abiInterface.decodeFunctionResult(
-          `${data.name}`,
-          txRes
-        );
+        // const decoded = abiInterface.decodeFunctionResult(
+        //   `${data.name}`,
+        //   txRes
+        // );
+
+        const decoded = decodeFunctionResult({
+          abi: [data],
+          functionName: data.name,
+          data: txRes,
+        });
 
         /// Error handling not checked
 
@@ -84,7 +92,7 @@ const ReturnedFunction = (propss) => {
         } else {
           //setting the inddividual
           /// for int
-          formattedOutput = parseInt(decoded);
+          // formattedOutput = parseInt(decoded);
           console.log(formattedOutput);
 
           /// for Address , String
@@ -99,11 +107,11 @@ const ReturnedFunction = (propss) => {
         // results not showing up on the page on the first reload
       } else if (data.stateMutability != "view") {
         // send write transaction
-        const txRes = await signer?.sendTransaction(tx);
+        const txRes = await signer.sendTransaction(tx);
 
         console.log(txRes);
 
-        const txLink = `${explorerLink}/tx/${txRes?.hash}`;
+        const txLink = `${explorerLink}/tx/${txRes}`;
 
         console.log(`Tx completed with the link ${txLink}`);
         //// show the tx data in the frontend
@@ -114,8 +122,11 @@ const ReturnedFunction = (propss) => {
 
       /// alert user with the error display on the page
 
-      const decoded = abiInterface.decodeErrorResult(`${data.name}`, txRes);
-      console.log(txRes);
+      const decoded = decodeErrorResult({
+        abi: [data],
+        data: error,
+      });
+      console.log(decoded);
     }
   }
 
