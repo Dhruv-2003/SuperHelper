@@ -15,6 +15,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 import localFont from "@next/font/local";
 import Navbar from "../components/navbar";
+import "../styles/globals.css"
 
 const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
