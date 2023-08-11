@@ -128,16 +128,6 @@ async function deploy() {
       message: "Enter the Contract Name: ",
     },
     {
-      name: "contractAddress",
-      type: "input",
-      message: "Enter the deployed Contract Address: ",
-    },
-    {
-      name: "deployerAddress",
-      type: "input",
-      message: "Enter the deployer Address: ",
-    },
-    {
       name: "deployerAddress",
       type: "input",
       message: "Enter the deployer Address: ",
@@ -169,7 +159,6 @@ async function deploy() {
   try {
     const contractData = {
       name: answers.contractName,
-      address: answers.contractAddress,
       deployer: answers.deployerAddress,
       abi: formattedResponse?.abi,
       bytecode: formattedResponse?.bytecode,
@@ -225,11 +214,6 @@ async function verify() {
       name: "contractAddress",
       type: "input",
       message: "Enter the deployed Contract Address: ",
-    },
-    {
-      name: "deployerAddress",
-      type: "input",
-      message: "Enter the deployer Address: ",
     },
     {
       name: "deployerAddress",
