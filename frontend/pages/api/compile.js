@@ -1,5 +1,7 @@
 const solc = require("solc");
 
+// POST
+
 export default function handler(req, res) {
   if (!req.body.sourceCode) {
     return res.status(400).json({ message: "Input required" });

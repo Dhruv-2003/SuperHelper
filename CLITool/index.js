@@ -3,11 +3,31 @@ import inquirer from "inquirer";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
 import fsPromises from "fs/promises";
-import path from "path";
-import { storeContract } from "./storeData";
-import { getChainId } from "./extras";
+import path, { dirname } from "path";
+import fetch from "node-fetch";
+
+const API_ENDPOINT = "http://localhost:3000";
 
 // Global Variables
+async function getChainId(networkName) {
+  if (networkName == "optimism") {
+    return 10;
+  } else if (networkName == "optimismGoerli") {
+    return 420;
+  } else if (networkName == "zora") {
+    return 7777777;
+  } else if (networkName == "zoraTestnet") {
+    return 999;
+  } else if (networkName == "base") {
+    return 8453;
+  } else if (networkName == "baseGoerli") {
+    return 84531;
+  } else if (networkName == "modeSepolia") {
+    return 919;
+  } else {
+    return;
+  }
+}
 
 async function welcome() {
   console.log(chalk.bold("SUPER HELPER CLI"));
@@ -58,19 +78,20 @@ async function compile() {
   try {
     const filePath = answers.Filepath;
 
-    /// Check the file path Should have .sol in the end
-    extension = filePath.slice(
-      (Math.max(0, filePath.lastIndexOf(".")) || Infinity) + 1
-    );
+    // /// Check the file path Should have .sol in the end
+    // let extension = filePath.slice(
+    //   (Math.max(0, filePath.lastIndexOf(".")) || Infinity) + 1
+    // );
 
     /// Get the file and then read it's content
     const data = await fsPromises.readFile(
-      path.join(__dirname, filePath),
+      path.join(process.cwd(), filePath),
       "utf8"
     );
+    // console.log(data);
 
     /// Call the Compile API with the SourceCode
-    const response = await fetch("./api/compile", {
+    const response = await fetch(`${API_ENDPOINT}/api/compile`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -165,7 +186,7 @@ async function deploy() {
       spinner.update("Uploading...");
       /// Upload the Data to IPFS
       /// Show a link to then deploy it on the Chain of choices
-      const response = await fetch("./api/prepareDeploy", {
+      const response = await fetch(`${API_ENDPOINT}/api/prepareDeploy`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -255,7 +276,7 @@ async function verify() {
       spinner.update("Verifying ...");
       /// Call the API with both of the info
       /// Check the Format of the data going in
-      const response = await fetch("./api/verifyContract", {
+      const response = await fetch(`${API_ENDPOINT}/api/verifyContract`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -265,7 +286,7 @@ async function verify() {
 
       const formattedRes = await response.json();
       spinner.stop();
-      const explorerLink = `http://localhost:3000/explorer/${answers.contractAddress}`;
+      const explorerLink = `${API_ENDPOINT}/explorer/${answers.contractAddress}`;
       /// Show the Verified contract link to the User
       console.log("Contract Successfully verified");
       console.log("IPFS URL for the Data: ", formattedRes.ipfsURL);
@@ -291,7 +312,7 @@ async function search() {
   const spinner = createSpinner("Fetching...").start();
   /// Call the API to check if the Address does exit ??
   try {
-    const response = await fetch("./api/searchContract", {
+    const response = await fetch(`${API_ENDPOINT}/api/searchContract`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -308,7 +329,7 @@ async function search() {
         "IPFS URI for the contract data : ",
         formattedResponse.ipfsURL
       );
-      const explorerLink = `http://localhost:3000/explorer/${answers.contractAddress}`;
+      const explorerLink = `${API_ENDPOINT}/explorer/${answers.contractAddress}`;
       console.log(
         `Contract can be further looked and explored on : ${explorerLink}`
       );

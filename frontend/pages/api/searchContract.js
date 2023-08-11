@@ -8,6 +8,8 @@ import {
   getContractRecord,
 } from "../../firebase/methods";
 
+// GET
+
 // Response from the API
 // type contractDataType = {
 //   name: string,

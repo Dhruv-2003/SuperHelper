@@ -26,7 +26,7 @@ import {
 const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 const RPC_LINK = process.env.NEXT_PUBLIC_RPC_URL;
 
-async function verifyContract(req, res) {
+async function prepareDeploy(req, res) {
   if (!req.body.contractData) {
     return res.status(400).json({ message: "Contract Data required" });
   }
@@ -40,37 +40,13 @@ async function verifyContract(req, res) {
   try {
     const CID = await storeContract(contractData);
     const IPFSURL = `https://w3s.link/ipfs/${CID}`;
+    const deployLink = `http://localhost:3000/deploy/${CID}`;
     console.log(IPFSURL);
-
-    /// Store the IPFS link somewhere
-    // const account = privateKeyToAccount("0x...");
-
-    // const walletClient = createWalletClient({
-    //   account,
-    //   chain: mainnet,
-    //   transport: http(RPC_LINK),
-    // }).extend(publicActions);
-
-    // const { request } = await walletClient.simulateContract({
-    //   address: Registery_address,
-    //   abi: Registery_ABI,
-    //   functionName: "addContractRecord",
-    //   arguments: [contractData.address, IPFSURL],
-    // });
-
-    // const tx = await walletClient.writeContract(request);
-
-    await addNewContractRecord(
-      `${contractData.address}`,
-      IPFSURL,
-      contractData.network,
-      contractData.chainId
-    );
-
-    console.log("Record Added in the registery");
-
+    console.log(deployLink);
     /// Record of the tx with the txHash
-    res.status(200).json({ output: contractData.address, ipfsURL: IPFSURL });
+    res
+      .status(200)
+      .json({ ipfsCID: CID, deployLink: deployLink, ipfsURL: IPFSURL });
   } catch (error) {
     res.status(400).json({ output: error });
     console.log(error);
