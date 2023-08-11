@@ -4,6 +4,8 @@ import figlet from "figlet";
 import { createSpinner } from "nanospinner";
 import fsPromises from "fs/promises";
 import path from "path";
+import { storeContract } from "./storeData";
+import { getChainId } from "./extras";
 
 // Global Variables
 
@@ -34,8 +36,11 @@ async function askTask() {
   if (choice == "Compile") {
     compile();
   } else if (choice == "Deploy") {
+    deploy();
   } else if (choice == "Verify") {
+    verify();
   } else if (choice == "Search") {
+    search();
   } else {
     console.log("WRONG CHOICE");
     askTask();
@@ -47,11 +52,10 @@ async function compile() {
   const answers = await inquirer.prompt({
     name: "Filepath",
     type: "input",
-    message: "Enter the Contract Source File path?",
+    message: "Enter the Contract Source File path: ",
   });
+  const spinner = createSpinner("Compiling...").start();
   try {
-    const spinner = createSpinner("Compiling...").start();
-
     const filePath = answers.Filepath;
 
     /// Check the file path Should have .sol in the end
@@ -81,37 +85,242 @@ async function compile() {
 
     if (response.status == 200) {
       console.log("Successfully Compiled");
+      return { formattedResponse, data };
     } else {
-      console.log("Successfully Compiled");
+      console.log("Compilation Failed");
       console.log(formattedResponse);
     }
   } catch (error) {
+    spinner.stop();
     /// Show the Errors if present based on the API Res Code
     console.log(error);
   }
 }
 
 async function deploy() {
+  const { formattedResponse, data } = await compile();
+
+  const answers = await inquirer.prompt([
+    {
+      name: "contractName",
+      type: "input",
+      message: "Enter the Contract Name: ",
+    },
+    {
+      name: "contractAddress",
+      type: "input",
+      message: "Enter the deployed Contract Address: ",
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+    {
+      name: "network",
+      type: "list",
+      message: "Choose the Network : ",
+      choices: [
+        "optimism",
+        "optimismGoerli",
+        "zora",
+        "zoraTestnet",
+        "base",
+        "baseGoerli",
+        "modeSepolia",
+        "custom",
+      ],
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+  ]);
+
   ///  Same 1st step as Compile
-  /// Move ahead if it compiles properly
-  /// We can deploy directly from here by taking in thier Private Key and Signing the tx if needed
-  /// Also take the network
-  /// -- OR --
-  /// Upload the Data to IPFS
-  /// Show a link to then deploy it on the Chain of choice
+  const spinner = createSpinner("Preparing Upload ...").start();
+  try {
+    const contractData = {
+      name: answers.contractName,
+      address: answers.contractAddress,
+      deployer: answers.deployerAddress,
+      abi: formattedResponse?.abi,
+      bytecode: formattedResponse?.bytecode,
+      code: data,
+      network: answers.network, /// need to check the network name
+      chainId: getChainId(answers.network),
+    };
+
+    /// Move ahead if it compiles properly
+    /// We can deploy directly from here by taking in thier Private Key and Signing the tx if needed
+    /// Also take the network
+    /// -- OR --
+    if (formattedResponse) {
+      spinner.update("Uploading...");
+      /// Upload the Data to IPFS
+      /// Show a link to then deploy it on the Chain of choices
+      const response = await fetch("./api/prepareDeploy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contractData }),
+      });
+
+      const formattedRes = await response.json();
+      spinner.stop();
+      /// An API Endpoint for storing this required data on IPFS
+      console.log(`CONTRACT DATA UPLOADED TO IPFS : ${formattedRes.ipfsURL}`);
+      console.log(
+        `TO DEPLOY , CONTINUE ON THE LINK ${formattedRes.deployLink}`
+      );
+    } else {
+      spinner.stop();
+      console.log("DATA MISSING , TRY AGAIN");
+    }
+  } catch (error) {
+    spinner.stop();
+    console.log(error);
+  }
 }
 
 async function verify() {
   /// Take in the File , Compile first ,
-  /// All goes while , take in Address
-  /// Call the API with both of the info
-  /// Check the Format of the data going in
-  /// Show the Verified contract link to the User
+  const { formattedResponse, data } = await compile();
+
+  const answers = await inquirer.prompt([
+    {
+      name: "contractName",
+      type: "input",
+      message: "Enter the Contract Name: ",
+    },
+    {
+      name: "contractAddress",
+      type: "input",
+      message: "Enter the deployed Contract Address: ",
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+    {
+      name: "network",
+      type: "list",
+      message: "Choose the Network : ",
+      choices: [
+        "optimism",
+        "optimismGoerli",
+        "zora",
+        "zoraTestnet",
+        "base",
+        "baseGoerli",
+        "modeSepolia",
+        "custom",
+      ],
+    },
+    {
+      name: "deployerAddress",
+      type: "input",
+      message: "Enter the deployer Address: ",
+    },
+  ]);
+
+  const spinner = createSpinner("Verifying...").start();
+  try {
+    const contractData = {
+      name: answers.contractName,
+      address: answers.contractAddress,
+      deployer: answers.deployerAddress,
+      abi: formattedResponse?.abi,
+      bytecode: formattedResponse?.bytecode,
+      code: data,
+      network: answers.network, /// need to check the network name
+      chainId: getChainId(answers.network),
+    };
+
+    /// All goes while , take in Address
+    if (formattedResponse) {
+      spinner.update("Verifying ...");
+      /// Call the API with both of the info
+      /// Check the Format of the data going in
+      const response = await fetch("./api/verifyContract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contractData }),
+      });
+
+      const formattedRes = await response.json();
+      spinner.stop();
+      const explorerLink = `http://localhost:3000/explorer/${answers.contractAddress}`;
+      /// Show the Verified contract link to the User
+      console.log("Contract Successfully verified");
+      console.log("IPFS URL for the Data: ", formattedRes.ipfsURL);
+      console.log(`The contract can be explored here : ${explorerLink}`);
+    } else {
+      console.log("Verification Failed , Try Again !!");
+      spinner.stop();
+    }
+  } catch (error) {
+    spinner.stop();
+    console.log(error);
+  }
 }
 
 async function search() {
   /// take in the address
+  const answers = await inquirer.prompt({
+    name: "contractAddress",
+    type: "input",
+    message: "Enter the deployed Contract Address: ",
+  });
+
+  const spinner = createSpinner("Fetching...").start();
   /// Call the API to check if the Address does exit ??
+  try {
+    const response = await fetch("./api/searchContract", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contractAddress: answers.contractAddress }),
+    });
+
+    // console.log(response);
+    const formattedResponse = (await response.json()).output;
+    if (formattedResponse) {
+      spinner.stop();
+      console.log("Contract Successfully fetched !!");
+      console.log(
+        "IPFS URI for the contract data : ",
+        formattedResponse.ipfsURL
+      );
+      const explorerLink = `http://localhost:3000/explorer/${answers.contractAddress}`;
+      console.log(
+        `Contract can be further looked and explored on : ${explorerLink}`
+      );
+    } else {
+      spinner.stop();
+      console.log("Contract Not found , Verify First !!");
+    }
+  } catch (error) {
+    spinner.stop();
+    console.log(error);
+  }
+
   /// Show the info , or display the same info on a fixed link
 }
 
