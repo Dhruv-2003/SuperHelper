@@ -1,7 +1,7 @@
 import React from "react";
 import ConstructorArguments from "./ConstructorArgs";
 import { deploy } from "../functionality/deployContract";
-import { useAccount, useProvider, useTransaction } from "wagmi";
+import { useAccount, usePublicClient, useNetwork } from "wagmi";
 import { storeContract } from "../functionality/storeData";
 import { Contract, Wallet } from "ethers";
 import { Registery_ABI, Registery_address } from "../constants/constants";
@@ -11,26 +11,19 @@ const private_key = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 
 const Verifier = () => {
   const { address } = useAccount();
-  const provider = useProvider();
+  const provider = usePublicClient();
   const toast = useToast();
+  const { chain, chains } = useNetwork();
 
   const [contractName, setContractName] = useState("");
   const [sourceCode, setSourceCode] = useState("");
-  // const [output, setOutput] = useState<{ abi: any[]; bytecode: string }>();
+  const [output, setOutput] = useState();
 
   const [contractAddress, setContractAddress] = useState("");
   const [error, setError] = useState("");
 
   const [compiled, setCompiled] = useState(false);
   const [ipfsLink, setIpfsLink] = useState("");
-
-  /// add the ENV thing and enable
-  const manager_wallet = new Wallet(private_key, provider);
-  const registery_contract = new Contract(
-    Registery_address,
-    Registery_ABI,
-    manager_wallet
-  );
 
   /// contract with imports have to be managed , not yet handled
   async function handleCompile() {
@@ -110,6 +103,8 @@ const Verifier = () => {
       abi: output?.abi,
       bytecode: output?.bytecode,
       code: sourceCode,
+      network: chain.network, /// need to check the network name
+      chainId: chain.id,
     };
 
     toast({
@@ -118,30 +113,34 @@ const Verifier = () => {
       duration: 2000,
       isClosable: true,
     });
-    const CID = await storeContract(contractData);
-    const IPFSURL = `https://w3s.link/ipfs/${CID}`;
-    console.log(IPFSURL, "IPFSURL");
-    setIpfsLink(IPFSURL);
+    const response = await fetch("./api/verifyContract", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contractData }),
+    });
+
+    const formattedResponse = await response.json();
+
+    console.log("IPFSURL", formattedResponse.ipfsURL);
+
+    setIpfsLink(formattedResponse.ipfsURL);
     toast({
       title: "IPFS URL",
-      description: `${IPFSURL}`,
+      description: `${formattedResponse.ipfsURL}`,
       status: "success",
       duration: 2800,
       isClosable: true,
     });
     /// Store the IPFS link somewhere
-
-    const tx = await registery_contract.addContractRecord(
-      contractAddress,
-      IPFSURL
-    );
     toast({
       title: "Adding Contract to Registry",
       status: "loading",
       duration: 2500,
       isClosable: true,
     });
-    await tx.wait();
+    // await tx.wait();
     // console.log("Record Added in the registery");
     toast({
       title: "Record Added in the Registry",

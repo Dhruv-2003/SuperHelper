@@ -69,7 +69,7 @@ async function verifyContract(req, res) {
     console.log("Record Added in the registery");
 
     /// Record of the tx with the txHash
-    res.status(200).json({ output: contractData.address });
+    res.status(200).json({ output: contractData.address, ipfsURL: IPFSURL });
   } catch (error) {
     res.status(400).json({ output: error });
     console.log(error);

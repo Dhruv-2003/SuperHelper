@@ -2,24 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Code } from "@chakra-ui/react";
 import ConstructorArguments from "./ConstructorArgs";
 import { deploy, deployViaEthers } from "../functionality/deployContract";
-import { useAccount, useProvider, useSigner, useTransaction } from "wagmi";
+import {
+  useAccount,
+  usePublicClient,
+  useWalletClient,
+  useNetwork,
+} from "wagmi";
 import { analyzeABI, functionType } from "../functionality/analyzeABI";
 import { storeContract } from "../functionality/storeData";
-import { Contract, ContractFactory, Wallet, ethers } from "ethers";
+import { Contract, ContractFactory, Wallet, ethers, parseEther } from "ethers";
 import { Registery_ABI, Registery_address } from "../constants/constants";
 import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
 
-const private_key = process.env.NEXT_PUBLIC_PRIVATE_KEY;
-
 const Deployer = () => {
   const { address } = useAccount();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
+  const provider = usePublicClient();
+  const { data: signer } = useWalletClient();
+  const { chain, chains } = useNetwork();
+
   const toast = useToast();
   const [contractName, setContractName] = useState("");
   const [sourceCode, setSourceCode] = useState("");
-  //   const [output, setOutput] = useState<{ abi: any[]; bytecode: string }>();
+  const [output, setOutput] = useState();
   const [constructorArg, setConstructorArg] = useState();
   const [argInputs, setArgInputs] = useState([]);
   const [ethValue, setEthValue] = useState("");
@@ -29,14 +34,6 @@ const Deployer = () => {
   const [txLink, setTxLink] = useState("");
   const [compiled, setCompiled] = useState(false);
   const [ipfsLink, setIpfsLink] = useState();
-
-  /// add the ENV thing and enable
-  const manager_wallet = new Wallet(private_key, provider);
-  const registery_contract = new Contract(
-    Registery_address,
-    Registery_ABI,
-    manager_wallet
-  );
 
   /// contract with imports have to be managed , not yet handled
   async function handleCompile() {
@@ -144,25 +141,39 @@ const Deployer = () => {
       isClosable: true,
     });
 
-    const factory = new ContractFactory(output.abi, output.bytecode, signer);
+    // const factory = new ContractFactory(output.abi, output.bytecode, signer);
 
     let contract;
+    let hash;
     //handle args
     console.log(argInputs);
     if (argInputs.length) {
-      contract = await factory.deploy(argInputs, {
-        value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
+      // contract = await factory.deploy(argInputs, {
+      //   value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
+      // });
+      hash = await signer.deployContract({
+        abi: output.abi,
+        args: argInputs,
+        value: ethValue ? parseEther(ethValue) : 0,
+        bytecode: output.bytecode,
       });
     } else {
-      contract = await factory.deploy({
-        value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
+      // contract = await factory.deploy({
+      //   value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
+      // });
+      hash = await signer.deployContract({
+        abi: output.abi,
+        value: ethValue ? parseEther(ethValue) : 0,
+        bytecode: output.bytecode,
       });
     }
 
-    console.log(contract);
-    const deployedContractAddress = contract.address;
+    // console.log(contract);
+    console.log(hash);
+    const tx = await provider.getTransaction(hash);
+    const deployedContractAddress = tx.to; /// -- NEED TO CHECK --
     setContractAddress(deployedContractAddress);
-    const deployTx = contract.deployTransaction;
+    // const deployTx = contract.deployTransaction;
 
     const contractLink = `${explorerLink}/contract/${deployedContractAddress}`;
 
@@ -176,7 +187,7 @@ const Deployer = () => {
     navigator.clipboard.writeText(deployedContractAddress);
     // console.log(`Contract Created with the address${contractLink}`);
 
-    const txLink = `${explorerLink}/tx/${deployTx.hash}`;
+    const txLink = `${explorerLink}/tx/${hash}`;
     console.log(txLink);
     toast({
       title: "Transaction Hash",
@@ -211,37 +222,45 @@ const Deployer = () => {
       abi: output?.abi,
       bytecode: output?.bytecode,
       code: sourceCode,
+      network: chain.network, /// need to check the network name
+      chainId: chain.id,
     };
+
     toast({
       title: "Uploading to IPFS...",
       status: "loading",
       duration: 2000,
       isClosable: true,
     });
-    const CID = await storeContract(contractData);
-    const IPFSURL = `https://w3s.link/ipfs/${CID}`;
-    console.log(IPFSURL, "IPFSURL");
-    setIpfsLink(IPFSURL);
+
+    const response = await fetch("./api/verifyContract", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contractData }),
+    });
+
+    const formattedResponse = await response.json();
+
+    console.log("IPFSURL", formattedResponse.ipfsURL);
+
+    setIpfsLink(formattedResponse.ipfsURL);
     toast({
       title: "IPFS URL",
-      description: `${IPFSURL}`,
+      description: `${formattedResponse.ipfsURL}`,
       status: "success",
       duration: 2800,
       isClosable: true,
     });
-    /// Store the IPFS link somewhere
 
-    const tx = await registery_contract.addContractRecord(
-      contractAddress,
-      IPFSURL
-    );
     toast({
       title: "Adding Contract to Registry",
       status: "loading",
       duration: 2500,
       isClosable: true,
     });
-    await tx.wait();
+    // await tx.wait();
     // console.log("Record Added in the registery");
     toast({
       title: "Record Added in the Registry",

@@ -23,11 +23,7 @@ export const addNewContractRecord = async (
 
 export const getContractRecord = async (contractAddress) => {
   try {
-    const docRef = doc(
-      db,
-      "contractRegistery",
-      `${contractAddress.toString()}`
-    );
+    const docRef = doc(db, "contractRegistery", contractAddress);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {

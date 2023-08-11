@@ -8,25 +8,29 @@ import {
   functionType,
 } from "@/functionality/analyzeABI";
 import { Registery_ABI, Registery_address } from "@/constants/constants";
-import { useAccount, useContract, useProvider } from "wagmi";
+import {
+  useAccount,
+  useContract,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
 import { Contract, Wallet } from "ethers";
 import { storeContract } from "@/functionality/storeData";
 import { explorerLink } from "@/constants/constants";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import ReturnedSourceCode from "@/components/ReturnedSourceCode";
-
-const private_key = process.env.NEXT_PUBLIC_PRIVATE_KEY;
+import { getContractRecord } from "../firebase/methods";
 
 const Explorer = () => {
   const router = useRouter();
 
-  //   const [readFunctions, setReadFunctions] = useState<functionType[]>();
-  //   const [writeFunctions, setWriteFunctions] = useState<functionType[]>();
+  const [readFunctions, setReadFunctions] = useState();
+  const [writeFunctions, setWriteFunctions] = useState();
   const [showType, setShowType] = useState("");
-  //   const [constructors, setConstructors] = useState<functionType[]>();
+  const [constructors, setConstructors] = useState();
   const [contractExists, setContractExists] = useState(false);
-  //   const [contractData, setContractData] = useState<contractDataType>();
+  const [contractData, setContractData] = useState();
   const [contractAddress, setContractAddress] = useState("");
   const [ipfsURI, setIpfsURI] = useState("");
   const [isReadActive, setIsReadActive] = useState(false);
@@ -34,12 +38,9 @@ const Explorer = () => {
   const [isSourceCodeActive, setIsSourceCodeActive] = useState(false);
 
   const { address } = useAccount();
-  const provider = useProvider();
-  const Registery_Contract = useContract({
-    address: Registery_address,
-    abi: Registery_ABI,
-    signerOrProvider: provider,
-  });
+  const provider = usePublicClient();
+  const { data: signer } = useWalletClient();
+
   const toast = useToast();
   console.log(showType, "showtype here");
   useEffect(() => {
@@ -52,9 +53,8 @@ const Explorer = () => {
   async function searchContract() {
     if (!contractAddress) return;
     try {
-      const response = await Registery_Contract?.getContractRecord(
-        contractAddress
-      );
+      const response = await getContractRecord(`${contractAddress}`);
+
       toast({
         title: "Address fetched!!!",
         status: "success",
@@ -75,7 +75,8 @@ const Explorer = () => {
         return;
         /// notify that Contract doesnot Exists
       }
-      setIpfsURI(response);
+      setIpfsURI(response.ipfsURI);
+
       setContractExists(true);
       fetchContractData(response);
     } catch (error) {
@@ -89,8 +90,8 @@ const Explorer = () => {
     }
   }
 
-  async function fetchContractData(ipfsURL) {
-    const contractData = await (await fetch(ipfsURL)).json();
+  async function fetchContractData(response) {
+    const contractData = await (await fetch(response.ipfsURL)).json();
     // console.log(contractData);
 
     if (!contractData) {
