@@ -15,6 +15,7 @@ import { Registery_ABI, Registery_address } from "@/constants/constants";
 import { storeContract } from "@/functionality/storeData";
 import { http, createWalletClient, publicActions } from "viem";
 import { mainnet } from "viem/chains";
+import { Wallet, ethers } from "ethers";
 import { privateKeyToAccount } from "viem/accounts";
 import {
   addNewContractRecord,
@@ -43,6 +44,9 @@ async function verifyContract(req, res) {
     const IPFSURL = `https://w3s.link/ipfs/${CID}`;
     console.log(IPFSURL);
 
+    // const provider = new ethers.providers.JsonRpcProvider(RPC_LINK);
+    // const signer = new Wallet(PRIVATE_KEY, provider);
+
     // / Store the IPFS link somewhere
     const account = privateKeyToAccount(PRIVATE_KEY);
 
@@ -53,6 +57,7 @@ async function verifyContract(req, res) {
     }).extend(publicActions);
 
     const eas = new EASService(walletClient);
+    // const eas = new EASService(signer);
 
     // const { request } = await walletClient.simulateContract({
     //   address: Registery_address,

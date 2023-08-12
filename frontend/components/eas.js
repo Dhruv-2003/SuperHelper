@@ -24,7 +24,8 @@ class EASService {
   //   offChain;
   signer;
 
-  constructor(provider, signer) {
+  constructor(signer) {
+    /// This Signer is ethers one I think , We might need to switch to Viem and create a different way of attesting
     this.easClient = new EAS(EASContractAddress);
     // this.offchain = new Offchain(EAS_CONFIG, 1);
     this.signer = signer;
