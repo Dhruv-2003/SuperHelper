@@ -62,6 +62,7 @@ const Deployer = () => {
       }
 
       setSourceCode(contractData.code);
+      setContractName(contractData.name);
 
       setError("Successfully Compiled");
       /// analyze the ABI and show const

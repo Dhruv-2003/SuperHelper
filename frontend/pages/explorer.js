@@ -12,6 +12,7 @@ import {
   useAccount,
   useContract,
   usePublicClient,
+  useSwitchNetwork,
   useWalletClient,
 } from "wagmi";
 import { Contract, Wallet } from "ethers";
@@ -40,6 +41,8 @@ const Explorer = () => {
   const { address } = useAccount();
   const provider = usePublicClient();
   const { data: signer } = useWalletClient();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
 
   const toast = useToast();
   console.log(showType, "showtype here");
@@ -91,7 +94,7 @@ const Explorer = () => {
   }
 
   async function fetchContractData(response) {
-    const contractData = await (await fetch(response.ipfsURL)).json();
+    const contractData = await (await fetch(response.ipfsURI)).json();
     // console.log(contractData);
 
     if (!contractData) {
@@ -106,6 +109,10 @@ const Explorer = () => {
     }
     /// has bytecode , abi , code
     setContractData(contractData);
+
+    // switch Network to the one for this contract
+    await switchNetwork(contractData.chainId);
+
     setShowType("source");
     setIsSourceCodeActive(true);
     setIsReadActive(false);
