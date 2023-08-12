@@ -52,11 +52,28 @@ const CustomButton = () => {
     }
   };
 
-  const changeNetwork = (chainId) => {
+  const changeNetwork = async (chainId) => {
     switchNetwork(chainId);
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainId }],
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const connectWallet = () => {};
+  const connectWallet = async () => {
+    try {
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log(accounts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <ConnectButton.Custom>
