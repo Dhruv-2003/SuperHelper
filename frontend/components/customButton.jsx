@@ -1,5 +1,63 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { addNewContractRecord, getContractRecord } from "../firebase/methods";
+
 const CustomButton = () => {
+  const addNewChain = async (
+    chainId,
+    chainName,
+    currName,
+    currSymbol,
+    currDecimals,
+    rpcURL
+  ) => {
+    // accept Inputs as form for the new Chain to be added
+    let chains = localStorage.getItem("chains");
+    const newChain = {
+      chainId: chainId,
+      chainName: chainName,
+      nativeCurrency: {
+        name: currName,
+        symbol: currSymbol,
+        decimals: currDecimals,
+      },
+      rpcUrls: [rpcURL],
+    };
+
+    if (chains) {
+      chains.push(newChain);
+    } else {
+      chains = [newChain];
+    }
+
+    localStorage.setItem("chains", chains);
+
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainId }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [newChain],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+  };
+
+  const changeNetwork = (chainId) => {
+    switchNetwork(chainId);
+  };
+
+  const connectWallet = () => {};
+
   return (
     <ConnectButton.Custom>
       {({
