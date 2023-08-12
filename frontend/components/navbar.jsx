@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import CustomButton from "./customButton";
 import { useAccount } from "wagmi";
+import dynamic from "next/dynamic";
 
 const Navbar = () => {
   const router = useRouter();
@@ -11,14 +12,12 @@ const Navbar = () => {
   return (
     <div className="w-screen bg-gradient-to-br from-gray-50 via-sky-50 to-slate-50">
       <div className="flex px-10 pt-3 pb-1 justify-between align-middle">
-        <div>
-          <p
-            onClick={() => router.push("/")}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-green-400 text-4xl cursor-pointer"
-          >
-            SuperHelper
-          </p>
-        </div>
+        <p
+          onClick={() => router.push("/")}
+          className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-green-400 text-4xl cursor-pointer"
+        >
+          SuperHelper
+        </p>
         {isConnected ? (
           <div className="flex justify-evenly w-1/2 mt-3">
             <p
@@ -58,4 +57,5 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+// export default Navbar;
+export default dynamic(() => Promise.resolve(Navbar), { ssr: false });
