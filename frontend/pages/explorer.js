@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import ReturnedFunction from "@/components/ReturnedFunction";
+import ReturnedFunction from "../components/returnedFunction.jsx";
 import {
   analyzeABI,
   contractDataType,
   functionType,
-} from "@/functionality/analyzeABI";
-import { Registery_ABI, Registery_address } from "@/constants/constants";
+} from "../functionality/analyzeABI";
+import { Registery_ABI, Registery_address } from "../constants/constants";
 import {
   useAccount,
   useContract,
@@ -15,11 +15,11 @@ import {
   useWalletClient,
 } from "wagmi";
 import { Contract, Wallet } from "ethers";
-import { storeContract } from "@/functionality/storeData";
-import { explorerLink } from "@/constants/constants";
+import { storeContract } from "../functionality/storeData";
+import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import ReturnedSourceCode from "@/components/ReturnedSourceCode";
+import ReturnedSourceCode from "../components/returnedSourceCode";
 import { getContractRecord } from "../firebase/methods";
 
 const Explorer = () => {

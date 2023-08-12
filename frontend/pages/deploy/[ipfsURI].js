@@ -14,12 +14,15 @@ import { Contract, ContractFactory, Wallet, ethers, parseEther } from "ethers";
 import { Registery_ABI, Registery_address } from "../constants/constants";
 import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 const Deployer = () => {
+  const router = useRouter();
   const { address } = useAccount();
   const provider = usePublicClient();
   const { data: signer } = useWalletClient();
   const { chain, chains } = useNetwork();
+  const { ipfsURI } = router.query;
 
   const toast = useToast();
   const [contractName, setContractName] = useState("");
@@ -35,59 +38,39 @@ const Deployer = () => {
   const [compiled, setCompiled] = useState(false);
   const [ipfsLink, setIpfsLink] = useState();
 
-  /// contract with imports have to be managed , not yet handled
-  async function handleCompile() {
-    if (!sourceCode) {
-      toast({
-        title: "No source code",
-        description:
-          "You need to provide source code to perform compilation!!!",
-        status: "warning",
-        duration: 2000,
-        isClosable: true,
-      });
-      // console.log("no Source code set");
-      return;
+  useEffect(() => {
+    if (ipfsURI) {
+      getContractDetails(ipfsURI);
     }
+  }, [ipfsURI]);
 
-    /// For proper handling we can change the API call format
-    const response = await fetch("./api/compile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sourceCode }),
-    });
+  async function getContractDetails(ipfsURI) {
+    try {
+      const IPFSURL = `https://w3s.link/ipfs/${ipfsURI}`;
+      const contractData = await (await fetch(IPFSURL)).json();
 
-    console.log(response);
-    const formattedResponse = (await response.json()).output;
-    // console.log(formattedResponse, "formatted response");
+      console.log(contractData);
+      if (!contractData) {
+        toast({
+          title: "Contract Data not found",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+        // console.log("Contract Data not found");
+        return;
+      }
 
-    if (response.status == 200) {
-      setOutput(formattedResponse);
-      toast({
-        title: "Compilation successfull",
-        description:
-          "Your code was compiled succesfully, You can deploy your contract now.",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
-      // console.log("Successfully Compiled");
+      setSourceCode(contractData.code);
+
       setError("Successfully Compiled");
       /// analyze the ABI and show const
       handleABI(formattedResponse.abi);
-
       setCompiled(true);
-    } else {
-      setError(formattedResponse);
-      toast({
-        title: "Compilation error",
-        description: `${formattedResponse}`,
-        status: "error",
-        duration: 2700,
-        isClosable: true,
-      });
+      setOutput(contractData);
+    } catch (error) {
+      console.log(error);
+      setError(error);
     }
   }
 
@@ -216,14 +199,8 @@ const Deployer = () => {
     }
 
     const contractData = {
-      name: contractName,
+      ...output,
       address: contractAddress,
-      deployer: address,
-      abi: output?.abi,
-      bytecode: output?.bytecode,
-      code: sourceCode,
-      network: chain.network, /// need to check the network name
-      chainId: chain.id,
     };
 
     toast({
