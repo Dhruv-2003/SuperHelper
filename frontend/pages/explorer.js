@@ -140,12 +140,14 @@ const Explorer = () => {
           <div className="flex mt-6">
             <div className="w-[700px] border border-gray-300 rounded-xl py-2 px-2 flex">
               <input
-                input={contractAddress}
-                setInput={setContractAddress}
-                search={searchContract}
+                value={contractAddress}
+                onChange={(e) => setContractAddress(e.target.value)}
                 className="px-5 py-2 text-2xl rounded-2xl border border-black w-11/12"
               ></input>
-              <button className="mx-3 border border-gray-400 px-3 py-1 rounded-xl text-2xl">
+              <button
+                onClick={searchContract}
+                className="mx-3 border border-gray-400 px-3 py-1 rounded-xl text-2xl"
+              >
                 <AiOutlineSearch />
               </button>
             </div>
@@ -159,20 +161,75 @@ const Explorer = () => {
               variant="enclosed"
             >
               <TabList>
-                <Tab>Read Contract</Tab>
-                <Tab>Write Contract</Tab>
-                <Tab>Source Code</Tab>
+                <Tab
+                  onClick={() => {
+                    setShowType("read");
+                    setIsReadActive(true);
+                    setIsWriteActive(false);
+                    setIsSourceCodeActive(false);
+                  }}
+                >
+                  Read Contract
+                </Tab>
+                <Tab
+                  onClick={() => {
+                    setShowType("write");
+                    setIsWriteActive(true);
+                    setIsReadActive(false);
+                    setIsSourceCodeActive(false);
+                  }}
+                >
+                  Write Contract
+                </Tab>
+                <Tab
+                  onClick={() => {
+                    setShowType("source");
+                    setIsSourceCodeActive(true);
+                    setIsReadActive(false);
+                    setIsWriteActive(false);
+                  }}
+                >
+                  Source Code
+                </Tab>
               </TabList>
 
               <TabPanels>
                 <TabPanel>
-                  <p>one!</p>
+                  <div className="flex items-center justify-evenly flex-wrap">
+                    {readFunctions &&
+                      readFunctions.map((readFunction, key) => {
+                        return (
+                          <ReturnedFunction
+                            functionData={readFunction}
+                            key={key}
+                            contractAddress={contractAddress}
+                          />
+                        );
+                      })}
+                  </div>
                 </TabPanel>
                 <TabPanel>
-                  <p>two!</p>
+                  <div className="flex items-center justify-evenly flex-wrap">
+                    {writeFunctions &&
+                      writeFunctions.map((writeFunction, key) => {
+                        return (
+                          <ReturnedFunction
+                            functionData={writeFunction}
+                            key={key}
+                            contractAddress={contractAddress}
+                          />
+                        );
+                      })}
+                  </div>
                 </TabPanel>
                 <TabPanel>
-                  <p>three!</p>
+                  <div>
+                    {contractData && (
+                      <div>
+                        <ReturnedSourceCode sourceCode={contractData.code} />
+                      </div>
+                    )}
+                  </div>
                 </TabPanel>
               </TabPanels>
             </Tabs>

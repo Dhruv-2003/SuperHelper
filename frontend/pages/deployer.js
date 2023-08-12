@@ -282,12 +282,43 @@ const Deployer = () => {
               <p className="text-xl font-mono">Paste Contract Code Here</p>
             </div>
             <div className="flex mt-6 justify-center mx-auto">
-              <textarea className="border border-black w-[700px] rounded-xl px-4 py-2 font-sans h-[500px]"></textarea>
+              <textarea
+                onChange={(e) => setSourceCode(e.target.value)}
+                className="border border-black w-[700px] rounded-xl px-4 py-2 font-sans h-[500px]"
+              ></textarea>
+              {constructorArg?.length && (
+                <ConstructorArguments
+                  args={constructorArg}
+                  inputs={argInputs}
+                  setInputs={setArgInputs}
+                  eth={ethValue}
+                  setEth={setEthValue}
+                />
+              )}
             </div>
             <div className="mt-7 mb-20 flex justify-center mx-auto">
-              <button className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200">
+              <button
+                onClick={() => handleCompile()}
+                className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200"
+              >
                 Compile
               </button>
+              {compiled && (
+                <button
+                  onClick={() => handleDeploy()}
+                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200"
+                >
+                  Deploy
+                </button>
+              )}
+              {compiled && (
+                <button
+                  onClick={() => verifyContract()}
+                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200"
+                >
+                  Verify
+                </button>
+              )}
             </div>
           </div>
         </div>
