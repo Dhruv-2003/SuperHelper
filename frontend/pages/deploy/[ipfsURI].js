@@ -16,6 +16,7 @@ import { Registery_ABI, Registery_address } from "../constants/constants";
 import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import EASService from "../../components/eas";
 
 const Deployer = () => {
   const router = useRouter();

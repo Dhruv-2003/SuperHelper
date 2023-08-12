@@ -20,6 +20,7 @@ import {
   addNewContractRecord,
   getContractRecord,
 } from "../../firebase/methods";
+import EASService from "../../components/eas";
 
 // POST
 
@@ -42,14 +43,16 @@ async function verifyContract(req, res) {
     const IPFSURL = `https://w3s.link/ipfs/${CID}`;
     console.log(IPFSURL);
 
-    /// Store the IPFS link somewhere
-    // const account = privateKeyToAccount("0x...");
+    // / Store the IPFS link somewhere
+    const account = privateKeyToAccount(PRIVATE_KEY);
 
-    // const walletClient = createWalletClient({
-    //   account,
-    //   chain: mainnet,
-    //   transport: http(RPC_LINK),
-    // }).extend(publicActions);
+    const walletClient = createWalletClient({
+      account,
+      chain: mainnet,
+      transport: http(RPC_LINK),
+    }).extend(publicActions);
+
+    const eas = new EASService(walletClient);
 
     // const { request } = await walletClient.simulateContract({
     //   address: Registery_address,
@@ -65,6 +68,14 @@ async function verifyContract(req, res) {
       IPFSURL,
       contractData.network,
       contractData.chainId
+    );
+
+    await eas.createOnChainsAttestations(
+      contractData.address,
+      IPFSURL,
+      contractData.network,
+      contractData.chainId,
+      contractData.deployer
     );
 
     console.log("Record Added in the registery");
