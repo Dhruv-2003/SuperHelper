@@ -7,6 +7,7 @@ import {
   usePublicClient,
   useWalletClient,
   useNetwork,
+  useSwitchNetwork,
 } from "wagmi";
 import { analyzeABI, functionType } from "../functionality/analyzeABI";
 import { storeContract } from "../functionality/storeData";
@@ -21,7 +22,9 @@ const Deployer = () => {
   const { address } = useAccount();
   const provider = usePublicClient();
   const { data: signer } = useWalletClient();
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
+  const { chains, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
   const { ipfsURI } = router.query;
 
   const toast = useToast();
@@ -63,6 +66,17 @@ const Deployer = () => {
 
       setSourceCode(contractData.code);
       setContractName(contractData.name);
+
+      if (contractData.chainId) {
+        switchNetwork(contractData.chainId);
+      } else {
+        toast({
+          title: "Select the Network you want to deploy on",
+          status: "info",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
 
       setError("Successfully Compiled");
       /// analyze the ABI and show const
