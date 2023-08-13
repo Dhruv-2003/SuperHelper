@@ -17,6 +17,10 @@ export default function handler(req, res) {
       },
     },
     settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
       outputSelection: {
         "*": {
           "*": ["*"],
@@ -26,7 +30,7 @@ export default function handler(req, res) {
   };
 
   var output = JSON.parse(solc.compile(JSON.stringify(input)));
-  //   console.log(output);
+  console.log(output.contracts["file.sol"]);
 
   // Error handling
   if (output.errors) {

@@ -11,6 +11,79 @@ import {
 } from "@chakra-ui/react";
 const CustomButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const addNewChain = async (
+    chainId,
+    chainName,
+    currName,
+    currSymbol,
+    currDecimals,
+    rpcURL
+  ) => {
+    // accept Inputs as form for the new Chain to be added
+    let chains = localStorage.getItem("chains");
+    const newChain = {
+      chainId: chainId,
+      chainName: chainName,
+      nativeCurrency: {
+        name: currName,
+        symbol: currSymbol,
+        decimals: currDecimals,
+      },
+      rpcUrls: [rpcURL],
+    };
+
+    if (chains) {
+      chains.push(newChain);
+    } else {
+      chains = [newChain];
+    }
+
+    localStorage.setItem("chains", chains);
+
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainId }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [newChain],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+  };
+
+  const changeNetwork = async (chainId) => {
+    switchNetwork(chainId);
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainId }],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const connectWallet = async () => {
+    try {
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log(accounts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ConnectButton.Custom>
       {({
@@ -143,3 +216,4 @@ const CustomButton = () => {
 };
 
 export default CustomButton;
+
