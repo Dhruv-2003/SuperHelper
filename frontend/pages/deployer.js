@@ -147,7 +147,7 @@ const Deployer = () => {
     let hash;
     //handle args
     console.log(argInputs);
-    console.log(output);
+    console.log(output)
     if (argInputs.length) {
       // contract = await factory.deploy(argInputs, {
       //   value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
@@ -155,8 +155,8 @@ const Deployer = () => {
       hash = await signer.deployContract({
         abi: output.abi,
         args: argInputs,
-        value: ethValue ? parseEther(ethValue) : 0,
         bytecode: output.bytecode,
+        account : address,
       });
     } else {
       // contract = await factory.deploy({
@@ -164,11 +164,10 @@ const Deployer = () => {
       // });
       hash = await signer.deployContract({
         abi: output.abi,
-        value: ethValue ? parseEther(ethValue) : 0,
         bytecode: output.bytecode,
+        account : address,
       });
     }
-
     // console.log(contract);
     console.log(hash);
     const tx = await provider.getTransaction(hash);
@@ -307,7 +306,7 @@ const Deployer = () => {
               {compiled && (
                 <button
                   onClick={() => handleDeploy()}
-                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200"
+                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200 mx-3"
                 >
                   Deploy
                 </button>
@@ -315,7 +314,7 @@ const Deployer = () => {
               {compiled && (
                 <button
                   onClick={() => verifyContract()}
-                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200"
+                  className="px-10 py-1.5 rounded-xl border bg-gradient-to-r from-indigo-400 to-green-400 text-white text-xl hover:scale-110 duration-200 mx-3"
                 >
                   Verify
                 </button>
