@@ -147,6 +147,7 @@ const Deployer = () => {
     let hash;
     //handle args
     console.log(argInputs);
+    console.log(output);
     if (argInputs.length) {
       // contract = await factory.deploy(argInputs, {
       //   value: ethValue ? ethers.utils.parseEther(ethValue) : 0,
