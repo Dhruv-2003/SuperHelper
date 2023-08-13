@@ -48,6 +48,8 @@ SuperHelper will improve the experience even more and will launch a deployer tha
 
 ## Useful Links
 
+Address of Deployed contract on Mode testnet: 0x1824E355A6AC2C1E811c1E212Cd815A6b34EAb31
+
 EAS Link: https://optimism-goerli-bedrock.easscan.org/attestation/view/0xf2ab03bd91a01d9d8857fc4cf47c40aecbe1edaf76f288e30c17fd4c3f1bf7a7
 
 IPFS Url for the smart contract: https://w3s.link/ipfs/bafkreihwgccgn6utbbvlz6hjvevgg72mwck5rogmusspwx2cr6rydoc5ra 
