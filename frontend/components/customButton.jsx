@@ -9,7 +9,10 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 const CustomButton = () => {
+  const [customChains, setCustomChains] = useState();
+  const [isAddNewChain, setIsAddNewChain] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addNewChain = async (
     chainId,
@@ -83,6 +86,16 @@ const CustomButton = () => {
       console.log(error);
     }
   };
+
+  const getChains = async () => {
+    const chains = await localStorage.getItem("chains");
+    console.log(chains);
+    setCustomChains(chains);
+  };
+
+  useEffect(() => {
+    getChains();
+  }, []);
 
   return (
     <ConnectButton.Custom>
@@ -163,34 +176,54 @@ const CustomButton = () => {
                     onClick={onOpen}
                     className="mt-3 mx-2 px-5 py-1 rounded-2xl border border-indigo-200 text-indigo-500"
                   >
-                    add custom chain
+                    Custom chains
                   </button>
                   <Modal isOpen={isOpen} onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent>
                       <ModalHeader>Add Custom Chain</ModalHeader>
                       <ModalCloseButton />
+                      <div className="mt-6 flex justify-center mx-auto mb-3 px-10 py-2 rounded-2xl border font-bold border-indigo-200 text-indigo-500">
+                        <button>Add New Chain</button>
+                      </div>
                       <ModalBody>
                         <div className="flex flex-col">
                           <div className="flex flex-col">
                             <p className="font-semibold">Chain Name</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Chain ID</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Chain RPC Url</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Currency Name</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
-                            <p className="font-semibold">Currency Symbol (Optional)</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <p className="font-semibold">
+                              Currency Symbol (Optional)
+                            </p>
+                            <input
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="mt-6 flex justify-center mx-auto mb-3 px-10 py-2 rounded-2xl border font-bold border-indigo-200 text-indigo-500">
                             <button>Add Chain</button>
@@ -216,4 +249,3 @@ const CustomButton = () => {
 };
 
 export default CustomButton;
-

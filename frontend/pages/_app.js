@@ -15,14 +15,14 @@ import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 import localFont from "@next/font/local";
 import Navbar from "../components/navbar";
-import "../styles/globals.css"
+import "../styles/globals.css";
 
 const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
 const modeSepolia = {
   id: 919,
   name: "Mode Testnet",
-  network: "Filecoin — HyperSpace testnet",
+  network: "modeTestnet",
   nativeCurrency: {
     decimals: 18,
     name: "ETH",
