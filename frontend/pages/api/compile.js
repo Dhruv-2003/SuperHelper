@@ -30,7 +30,7 @@ export default function handler(req, res) {
   };
 
   var output = JSON.parse(solc.compile(JSON.stringify(input)));
-  console.log(output.contracts["file.sol"]);
+  // console.log(output.contracts["file.sol"]);
 
   // Error handling
   if (output.errors) {
