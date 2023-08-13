@@ -168,15 +168,15 @@ const ReturnedFunction = (props) => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-around w-[318px] h-[320px] pb-5 px-8 border-t-8 border-orange-400 rounded-lg my-10 mx-10 bg-gray-800 text-white">
-      <h4 className="text-white text-xl py-2">{data.name}</h4>
+    <div className="flex flex-col justify-around w-[318px] h-[320px] pb-5 px-8 border border-black bg-white text-black rounded-xl">
+      <h4 className="text-black text-xl py-2">{data.name}</h4>
       {ifPayable && (
         <>
-          <p className="text-green-500 text-m py-2">Payable</p>
+          <p className="text-indigo-500 text-m py-2">Payable</p>
           <input
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Value in FIL"
-            className="px-1 py-1 mb-4 bg-[#D1D7D9] text-black outline-none rounded-sm"
+            placeholder=""
+            className="px-2 py-1 mb-4 bg-white text-black outline-none rounded-xl border border-black"
           />
         </>
       )}
@@ -187,19 +187,14 @@ const ReturnedFunction = (props) => {
               key={key}
               onChange={(e) => handleInput(e.target.value, key)}
               placeholder={input.name}
-              className="px-1 py-1 mb-4 bg-[#D1D7D9] text-black outline-none rounded-sm"
+              className="px-2 py-1 mb-4 bg-white text-black outline-none rounded-xl border border-black"
             />
           );
         })}
-      {/* 
-      <input
-        placeholder="uint"
-        className="px-1 py-1 mb-4 bg-[#D1D7D9] text-black outline-none rounded-sm"
-      /> */}
       <div className="flex items-center justify-center">
         <button
           onClick={() => handleSubmit()}
-          className="bg-gradient-to-t from-[#201CFF] to-[#C41CFF] py-2 px-10 mb-5"
+          className="bg-gradient-to-t from-indigo-400 to-green-400 py-2 px-10 mb-5 rounded-xl"
         >
           Submit
         </button>
@@ -220,7 +215,7 @@ const ReturnedFunction = (props) => {
                 <h1 className="text-lg">
                   {output.name ? output.name : "Output :"}
                 </h1>
-                <h2 className="text-green-400">
+                <h2 className="text-indigo-400">
                   {/* {output.type == "uint256"
                     ? parseInt(argOutputs[key])
                     : argOutputs[key]} */}

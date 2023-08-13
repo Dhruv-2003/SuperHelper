@@ -4,32 +4,40 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useState } from "react";
 const CustomButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [chainData, setChainData] = useState({
+    chainId: "",
+    chainName: "",
+    currName: "",
+    currSymbol: "",
+    currDecimals: "",
+    rpcURL: "",
+  });
   const addNewChain = async (
-    chainId,
-    chainName,
-    currName,
-    currSymbol,
-    currDecimals,
-    rpcURL
+    chain_Id,
+    chain_Name,
+    curr_Name,
+    curr_Symbol,
+    curr_Decimals,
+    rpc_URL
   ) => {
     // accept Inputs as form for the new Chain to be added
     let chains = localStorage.getItem("chains");
     const newChain = {
-      chainId: chainId,
-      chainName: chainName,
+      chain_Id: chain_Id,
+      chain_Name: chain_Name,
       nativeCurrency: {
-        name: currName,
-        symbol: currSymbol,
-        decimals: currDecimals,
+        name: curr_Name,
+        symbol: curr_Symbol,
+        decimals: curr_Decimals,
       },
-      rpcUrls: [rpcURL],
+      rpcUrls: [rpc_URL],
     };
 
     if (chains) {
@@ -43,7 +51,7 @@ const CustomButton = () => {
     try {
       await ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: chainId }],
+        params: [{ chain_Id: chain_Id }],
       });
     } catch (switchError) {
       // This error code indicates that the chain has not been added to MetaMask.
@@ -174,23 +182,91 @@ const CustomButton = () => {
                         <div className="flex flex-col">
                           <div className="flex flex-col">
                             <p className="font-semibold">Chain Name</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              value={chainData.chainName}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  chainName: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Chain ID</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              value={chainData.chainId}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  chainId: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Chain RPC Url</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              value={chainData.rpcURL}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  rpcURL: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
                             <p className="font-semibold">Currency Name</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <input
+                              value={chainData.currName}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  currName: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="flex flex-col mt-4">
-                            <p className="font-semibold">Currency Symbol (Optional)</p>
-                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                            <p className="font-semibold">
+                              Currency Symbol (Optional)
+                            </p>
+                            <input
+                              value={chainData.currSymbol}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  currSymbol: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
+                          </div>
+                          <div className="flex flex-col mt-4">
+                            <p className="font-semibold">
+                              Currency Decimal (Optional)
+                            </p>
+                            <input
+                              value={chainData.currDecimals}
+                              onChange={(e) => {
+                                setChainData({
+                                  ...chainData,
+                                  currDecimals: e.target.value,
+                                });
+                              }}
+                              type="text"
+                              className="mt-2 px-3 py-1 border border-black rounded-xl"
+                            ></input>
                           </div>
                           <div className="mt-6 flex justify-center mx-auto mb-3 px-10 py-2 rounded-2xl border font-bold border-indigo-200 text-indigo-500">
                             <button>Add Chain</button>
@@ -216,4 +292,3 @@ const CustomButton = () => {
 };
 
 export default CustomButton;
-

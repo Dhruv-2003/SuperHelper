@@ -135,7 +135,7 @@ const Explorer = () => {
   // send the user to deploy page but with a contractAddress , so that it will not deploy the contract again and verify the contract
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-gray-50 via-sky-50 to-slate-50">
+    <div className="w-screen h-full bg-gradient-to-br from-gray-50 via-sky-50 to-slate-50">
       <div className="flex flex-col justify-center mx-auto items-center">
         <div className="mt-24">
           <p className="text-4xl">Explore Contracts</p>
@@ -200,7 +200,7 @@ const Explorer = () => {
                 </Tab>
               </TabList>
 
-              <TabPanels>
+              <TabPanels className="mb-5">
                 <TabPanel>
                   <div className="flex items-center justify-evenly flex-wrap">
                     {readFunctions &&

@@ -11,8 +11,7 @@
 //   chainId: number;
 // };
 
-import { Registery_ABI, Registery_address } from "@/constants/constants";
-import { storeContract } from "@/functionality/storeData";
+import storeContract  from "../../functionality/storeData";
 import { http, createWalletClient, publicActions } from "viem";
 import { mainnet } from "viem/chains";
 import { Wallet, ethers } from "ethers";
@@ -41,6 +40,7 @@ async function verifyContract(req, res) {
 
   try {
     const CID = await storeContract(contractData);
+    console.log(CID)
     const IPFSURL = `https://w3s.link/ipfs/${CID}`;
     console.log(IPFSURL);
 

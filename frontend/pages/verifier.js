@@ -3,8 +3,6 @@ import ConstructorArguments from "../components/constructorArgs";
 import { deploy } from "../functionality/deployContract";
 import { useAccount, usePublicClient, useNetwork } from "wagmi";
 import { storeContract } from "../functionality/storeData";
-import { Registery_ABI, Registery_address } from "../constants/constants";
-import { explorerLink } from "../constants/constants";
 import { useToast } from "@chakra-ui/react";
 const private_key = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 
@@ -112,7 +110,7 @@ const Verifier = () => {
       duration: 2000,
       isClosable: true,
     });
-    const response = await fetch("./api/verifyContract", {
+    const response = await fetch("./api/verifyContracts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
