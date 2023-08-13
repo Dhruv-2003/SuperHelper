@@ -4,35 +4,41 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 const CustomButton = () => {
   const [customChains, setCustomChains] = useState();
   const [isAddNewChain, setIsAddNewChain] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [chainData, setChainData] = useState({
+    chainId: "",
+    chainName: "",
+    currName: "",
+    currSymbol: "",
+    currDecimals: "",
+    rpcURL: "",
+  });
   const addNewChain = async (
-    chainId,
-    chainName,
-    currName,
-    currSymbol,
-    currDecimals,
-    rpcURL
+    chain_Id,
+    chain_Name,
+    curr_Name,
+    curr_Symbol,
+    curr_Decimals,
+    rpc_URL
   ) => {
     // accept Inputs as form for the new Chain to be added
     let chains = localStorage.getItem("chains");
     const newChain = {
-      chainId: chainId,
-      chainName: chainName,
+      chain_Id: chain_Id,
+      chain_Name: chain_Name,
       nativeCurrency: {
-        name: currName,
-        symbol: currSymbol,
-        decimals: currDecimals,
+        name: curr_Name,
+        symbol: curr_Symbol,
+        decimals: curr_Decimals,
       },
-      rpcUrls: [rpcURL],
+      rpcUrls: [rpc_URL],
     };
 
     if (chains) {
@@ -46,7 +52,7 @@ const CustomButton = () => {
     try {
       await ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: chainId }],
+        params: [{ chain_Id: chain_Id }],
       });
     } catch (switchError) {
       // This error code indicates that the chain has not been added to MetaMask.

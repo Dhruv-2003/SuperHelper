@@ -170,21 +170,21 @@ const Deployer = () => {
     }
     // console.log(contract);
     console.log(hash);
-    const tx = await provider.getTransaction(hash);
-    const deployedContractAddress = tx.to; /// -- NEED TO CHECK --
+    // const tx = await provider.getTransaction(hash);
+    const deployedContractAddress = hash; /// -- NEED TO CHECK --
     setContractAddress(deployedContractAddress);
     // const deployTx = contract.deployTransaction;
 
-    const contractLink = `${explorerLink}/contract/${deployedContractAddress}`;
+    const contractLink = `${explorerLink}/tx/${deployedContractAddress}`;
 
     toast({
       title: "Contract Deployed!!!",
-      description: `Contract created with the address Copied to clipboard ${deployedContractAddress}`,
+      description: `Contract created with the address Copied to clipboard ${contractLink}`,
       status: "success",
       duration: 5000,
       isClosable: true,
     });
-    navigator.clipboard.writeText(deployedContractAddress);
+    navigator.clipboard.writeText(contractLink);
     // console.log(`Contract Created with the address${contractLink}`);
 
     const txLink = `${explorerLink}/tx/${hash}`;
