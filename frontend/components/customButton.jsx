@@ -1,5 +1,16 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 const CustomButton = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <ConnectButton.Custom>
       {({
@@ -13,12 +24,8 @@ const CustomButton = () => {
       }) => {
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
-        const ready = mounted && authenticationStatus !== "loading";
-        const connected =
-          ready &&
-          account &&
-          chain &&
-          (!authenticationStatus || authenticationStatus === "authenticated");
+        const ready = mounted;
+        const connected = ready && account && chain;
         return (
           <div
             {...(!ready && {
@@ -55,6 +62,7 @@ const CustomButton = () => {
                     onClick={openChainModal}
                     style={{ display: "flex", alignItems: "center" }}
                     type="button"
+                    className="mt-3"
                   >
                     {chain.hasIcon && (
                       <div
@@ -78,11 +86,51 @@ const CustomButton = () => {
                     )}
                     {chain.name}
                   </button>
-                  <button onClick={openAccountModal} type="button">
-                    {account.displayName}
-                    {account.displayBalance
+                  <button
+                    onClick={onOpen}
+                    className="mt-3 mx-2 px-5 py-1 rounded-2xl border border-indigo-200 text-indigo-500"
+                  >
+                    add custom chain
+                  </button>
+                  <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Add Custom Chain</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <div className="flex flex-col">
+                          <div className="flex flex-col">
+                            <p className="font-semibold">Chain Name</p>
+                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                          </div>
+                          <div className="flex flex-col mt-4">
+                            <p className="font-semibold">Chain ID</p>
+                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                          </div>
+                          <div className="flex flex-col mt-4">
+                            <p className="font-semibold">Chain RPC Url</p>
+                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                          </div>
+                          <div className="flex flex-col mt-4">
+                            <p className="font-semibold">Currency Name</p>
+                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                          </div>
+                          <div className="flex flex-col mt-4">
+                            <p className="font-semibold">Currency Symbol (Optional)</p>
+                            <input type="text" className="mt-2 px-3 py-1 border border-black rounded-xl"></input>
+                          </div>
+                          <div className="mt-6 flex justify-center mx-auto mb-3 px-10 py-2 rounded-2xl border font-bold border-indigo-200 text-indigo-500">
+                            <button>Add Chain</button>
+                          </div>
+                        </div>
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
+                  <button onClick={openAccountModal}>
+                    {/* {account.displayName} */}
+                    {/* {account.displayBalance
                       ? ` (${account.displayBalance})`
-                      : ""}
+                      : ""} */}
                   </button>
                 </div>
               );

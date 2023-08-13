@@ -24,8 +24,8 @@ const ConstructorArguments = (props) => {
   }
 
   return (
-    <div className="flex flex-col w-[328px] bg-gray-300 px-8  text-white text-xl rounded-2xl my-10 mx-10 pb-8">
-      <h4 className="text-white text-2xl py-5 text-center">
+    <div className="flex flex-col w-[328px] bg-white px-8 border border-black text-black text-xl rounded-2xl my-10 mx-10 pb-8">
+      <h4 className="text-black text-2xl py-5 text-center">
         Constructor Arguments
       </h4>
       {constructorData?.stateMutability == "payable" && (
